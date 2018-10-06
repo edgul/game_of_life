@@ -1,0 +1,38 @@
+#
+# The game of life
+# concept by John Horton Conway
+
+Dependencies:
+* python 2.7
+* Zelle's graphics.py
+* Tk
+
+Known Issues:
+
+* crashes on quit (before start)
+* cannot stop once started
+* cannot quit once started
+
+
+Improvements:
+-------------
+
+UI
+* speed options
+* restart (stop and clear)
+* pause/continue
+* place more pieces during pause
+* save/place patterns
+* end of simulation detection
+    -> no changes
+    -> looping
+* screen dimensions
+* screen location
+* click+drag -> light up sets of cells
+
+Architecture
+* get rid of copyList/statusList -> maintain list of cells to change
+* Improve use of libraries
+* Move away from graphics.py
+* collapse frame classes into one
+
