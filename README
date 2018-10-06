@@ -1,15 +1,19 @@
-#
-# The game of life
-# concept by John Horton Conway
+
+The game of life (John Horton Conway's)
+---------------------------------------
+
+Evolving cellular automation based on neighbour population.
 
 Dependencies:
 * python 2.7
 * Zelle's graphics.py
 * Tk
 
-Known Issues:
 
-* crashes on quit (before start)
+Known Issues:
+-------------
+
+* crashes on quit (before starting)
 * cannot stop once started
 * cannot quit once started
 
@@ -17,7 +21,8 @@ Known Issues:
 Improvements:
 -------------
 
-UI
+UI improvements
+
 * speed options
 * restart (stop and clear)
 * pause/continue
@@ -30,7 +35,9 @@ UI
 * screen location
 * click+drag -> light up sets of cells
 
-Architecture
+
+Architecture improvements
+
 * get rid of copyList/statusList -> maintain list of cells to change
 * Improve use of libraries
 * Move away from graphics.py
