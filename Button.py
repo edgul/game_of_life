@@ -3,36 +3,26 @@
 # Button.py
 
 from graphics import *
+from Border import Border
+from Frame import Frame
 
-class Button:
 
-    def __init__(self, ON , color, pt, win, msg):
-        self.textBox = Text( pt, msg )
-        self.color = color
-        self.ON = ON
-        self.pt = pt
-        self.win = win
+class Button(Frame):
 
-    def getON(self):
-        return self.ON
+    def __init__(self, pt_anchor, pt_vector, msg, anchor_center_pt):
+        Frame.__init__(self, pt_anchor, pt_vector, anchor_center_pt)
 
-    def click(self):
-        self.toggleColor()
-        self.toggleReady()
+        self.text = Text(self.pt_top_left, msg)
+        self.border = Border(pt_anchor, pt_vector, anchor_center_pt)
 
-    def toggleColor(self):
-        if self.color == "grey":
-            self.color = "green"
-        else:
-            self.color = "grey"
-        self.textBox.setFill( self.color )
+    def draw(self, win):
+        Frame.draw(self, win)
+        self.border.draw(win)
+        self.text.draw(win)
 
-    def toggleReady(self):
-        self.ON = not(self.ON)
+    def redraw(self, win):
+        Frame.redraw(self, win)
+        self.border.redraw(win)
 
-    def draw(self):  # might also need a re-draw function
-        self.textBox.draw(self.win)
-
-    def getGo(self):
-        return self.ON
-
+        self.text.undraw()
+        self.text.draw(win)

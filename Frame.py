@@ -1,49 +1,60 @@
 #!/usr/bin/python
 #
+# Frame.py
 
-from Controller import *
-from Matrix import Matrix
+from graphics import Point
+from graphics import Rectangle
 
 
-# Abstract container class
 class Frame:
 
-	def init(self, bottomLeftCoord, topRightCoord ):
-		self.bottomLeftCoord = bottomLeftCoord
-		self.topRightCoord = topRightCoord
-		self.backgroundColor = "grey"
+    def __init__(self, pt_anchor, pt_vector, anchor_center_pt):
+        if anchor_center_pt:
+            self.pt_top_left = Point(pt_anchor.getX() - pt_vector.getX()/2, pt_anchor.getY() - pt_vector.getY()/2)
+        else:
+            self.pt_top_left = pt_anchor
 
-	def inFrame( self, pt):
-		return self.bottomLeftCoord.getX() < pt.getX() and \
-			self.bottomLeftCoord.getY() > pt.getY() and \
-			self.topRightCoord.getY() < pt.getY() and \
-			self.topRightCoord.getX() > pt.getX()
-			
+        self.pt_vector = pt_vector
 
+        self.rectangle = Rectangle(self.top_left(), self.bottom_right())
+        self.rectangle.setFill("grey")
 
-# Holds the view of the matrix of cells
-class MatrixFrame( Frame ):
+    def top_left(self):
+        return self.pt_top_left
 
-	def __init__(self, bottomLeftCoord, topRightCoord, cellWidth, cellHeight, numCols, numRows, win  ):
-		self.init(bottomLeftCoord,topRightCoord )
+    def top_right(self):
+        return Point(self.pt_top_left.getX() + self.pt_vector.getX(), self.pt_top_left.getY())
 
-		#build matrix
-		self.matrix = Matrix(bottomLeftCoord, topRightCoord, cellWidth, cellHeight, numCols, numRows, win)
+    def bottom_left(self):
+        return Point(self.pt_top_left.getX(), self.pt_top_left.getY() + self.pt_vector.getY())
 
+    def bottom_right(self):
+        return Point(self.pt_top_left.getX() + self.pt_vector.getX(), self.pt_top_left.getY() + self.pt_vector.getY())
 
-# Holds buttons to interact with
-class ControllerFrame( Frame ):
+    def center(self):
+        return Point(self.top_left().getX() + int(self.pt_vector.getX()/2), self.top_left().getY() + int(self.pt_vector.getY()/2))
 
-	def __init__(self, bottomLeftCoord, topRightCoord, win ):
-		self.init(bottomLeftCoord, topRightCoord ) 
-		self.controller = Controller(bottomLeftCoord, topRightCoord, win)
+    def contains(self, pt):
+        pt_x = pt.getX()
+        pt_y = pt.getY()
 
+        within_x = False
+        within_y = False
 
-# Holds messages to the user
-class MessageFrame( Frame ):
+        if self.top_left().getX() <= pt_x <= self.top_right().getX():
+            within_x = True
 
-	def __init__(self, bottomLeftCoord, topRightCoord ):
-		self.init(bottomLeftCoord, topRightCoord ) 
-		
-	
+        if self.top_left().getY() <= pt_y <= self.bottom_left().getY():
+            within_y = True
 
+        return within_x and within_y
+
+    def set_background_color(self, color):
+        self.rectangle.setFill(color)
+
+    def draw(self, win):
+        self.rectangle.draw(win)
+
+    def redraw(self, win):
+        self.rectangle.undraw()
+        self.rectangle.draw(win)

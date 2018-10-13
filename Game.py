@@ -2,105 +2,96 @@
 #
 # Game.py
 
-from Frame import *
+import threading
+from MainWindow import *
+from Matrix import Matrix
 
-# window init and game logic ; contains frames for everything else
+import copy
+
 
 class Game:
 
-	def __init__(self):
+	def __init__(self, rows, columns):
 
-		#define window dimensions
-		WINDOWWIDTH = 750
-		WINDOWHEIGHT = 750
+		self.matrix = Matrix(rows, columns)
 
-		#define frame dimensions
-		MESSAGEFRAMEHEIGHT = 75
-		CONTROLLERFRAMEHEIGHT = 75
-		MATRIXFRAMEHEIGHT = WINDOWHEIGHT - MESSAGEFRAMEHEIGHT - CONTROLLERFRAMEHEIGHT
-	
-		#define cell dimensions	
-		CELLHEIGHT = 27
-		CELLWIDTH = 27
+		self.quitting = False
+		self.active = False
+		self.start = False
 
-		#calculate number of columns & rows
-		numColumns = WINDOWWIDTH/CELLWIDTH
-		numRows = WINDOWHEIGHT/CELLHEIGHT
+		self.t = threading.Thread(target=self.init_loop)
+		self.t.start()
 
-		#points for frames
-		msgFrameBottomLeft = Point( 0, MESSAGEFRAMEHEIGHT )
-		msgFrameTopRight = Point ( WINDOWWIDTH , 0 )
+	def get_matrix(self):
+		return self.matrix
 
-		matrixFrameBottomLeft = Point( 0, MESSAGEFRAMEHEIGHT + MATRIXFRAMEHEIGHT )
-		matrixFrameTopRight = Point( WINDOWWIDTH, MESSAGEFRAMEHEIGHT)
+	def cell_clicked(self, cell):
+		if not self.active:
+			cell.set_alive(not cell.get_alive())
 
-		controllerFrameBottomLeft = Point( 0, WINDOWHEIGHT )
-		controllerFrameTopRight = Point( WINDOWWIDTH, WINDOWHEIGHT - CONTROLLERFRAMEHEIGHT ) 
+	def start_clicked(self):
+		if not self.active:
+			self.start = True
 
-		#create graphics window 
-		self.win = GraphWin("life", WINDOWWIDTH, WINDOWHEIGHT)		
+	def quit_clicked(self):
+		self.quitting = True
 
-		#build frame and controller
-		self.matrixFrame = MatrixFrame(matrixFrameBottomLeft, matrixFrameTopRight, CELLWIDTH, CELLHEIGHT, numColumns, numRows, self.win) 
-		self.controllerFrame = ControllerFrame(controllerFrameBottomLeft, controllerFrameTopRight, self.win)
-		self.messageFrame = MessageFrame( msgFrameBottomLeft, msgFrameTopRight ) 
+	def run(self):
+		self.active = True
+		print "starting simulation..."
 
-		#loop until quit
-		while not( self.controllerFrame.controller.getQuit()):	
+		# update cells
+		while not self.quitting:
 
-			#loop until start game
-			while not(self.controllerFrame.controller.getGo()):
-				print "click",
-				clickpt = self.win.getMouse()	
+			print "updating"
 
-				if self.matrixFrame.inFrame( clickpt ):
-					for i in self.matrixFrame.matrix.cells:
-						if i.withinCell(clickpt):
-							i.click()
-							i.redraw(self.win) 		##necessary?
-							break
+			self.matrix.print_cells()
 
-				elif self.controllerFrame.inFrame(clickpt):
-					if clickpt.getX() > 550 and clickpt.getX() < 590:
-						if clickpt.getY() > 700 :
-							print "quit"
-							#quit()
-							self.controllerFrame.controller.quit.toggleGO()
-						
-					elif clickpt.getX() > 250 and clickpt.getX() < 330:
-						print "start/stop"
-						if clickpt.getY() > 700 :
-							self.controllerFrame.controller.toggleGO()
-								
-			self.runGame()			
-		
-	def runGame(self):
-		#update status list
-		self.matrixFrame.matrix.updateStatusList()
+			matrix_cells_copy = copy.deepcopy(self.matrix.cells)
 
-		#iterate through orig, removing or adding based on copy list	
-		for i in range(0, len(self.matrixFrame.matrix.cells)):
-			#count neightbours that are alive
-			neighbourCount = self.matrixFrame.matrix.countNeighbours(i)					
-	
-			#cell is alive
-			if self.matrixFrame.matrix.cells[i].status:
-				#cell dies:
-				if (neighbourCount < 2 or neighbourCount > 3):
-					self.matrixFrame.matrix.kill(i)
-				#stays alive:
+			for cell in self.matrix.cells:
+				neighbours = self.matrix.neighbours(cell)
+
+				active_neighbours = 0
+				for neighbour in neighbours:
+					if neighbour.get_alive():
+						active_neighbours += 1
+
+				print active_neighbours,
+
+				# update cell states
+				if cell.alive:
+					if active_neighbours < 2 or active_neighbours > 3:
+						matrix_cells_copy[cell.index].set_alive(False)
 				else:
-					self.matrixFrame.matrix.live(i)
-			#cell is dead
-			else:
-				#revives:
-				if (neighbourCount == 3):
-					self.matrixFrame.matrix.live(i)
-				#stays dead:
-				else:
-					self.matrixFrame.matrix.kill(i)
+					if active_neighbours == 3:
+						matrix_cells_copy[cell.index].set_alive(True)
 
-		#sleep after each pass
-		time.sleep(2)
+			self.matrix.cells = matrix_cells_copy
+
+			print
+			self.matrix.print_cells()
+
+			time.sleep(3)
+
+		self.active = False
+		quit()
+
+	def init_loop(self):
+		print "init loop started"
+
+		while True:
+			if self.quitting or self.start:
+				break
+
+			time.sleep(1)
+
+		if self.quitting:
+			self.quit()
+		elif self.start:
+			self.run()
+
+	def quit(self):
+		print "quitting"
 
 

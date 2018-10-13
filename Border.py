@@ -3,24 +3,36 @@
 # Border.py
 
 from graphics import *
+from Frame import Frame
 
-#  Contains lines to draw cell perimeter
-class Border:
 
-    def __init__(self, pt1, pt2):
-        # store corner points of the cell
-        self.tr = Point(pt2.x, pt1.y)
-        self.bl = Point(pt1.x, pt2.y)
+class Border(Frame):
 
-        # build lines
-        self.topborder = Line(pt1, self.tr)
-        self.leftborder = Line(pt1, self.bl)
-        self.rightborder = Line(self.tr, pt2)
-        self.bottomborder = Line(self.bl, pt2)
+    def __init__(self, pt_anchor, pt_vector, anchor_is_center):
+        Frame.__init__(self, pt_anchor, pt_vector, anchor_is_center)
 
-    # draws lines around the cell
     def draw(self, win):
-        self.topborder.draw(win)
-        self.leftborder.draw(win)
-        self.rightborder.draw(win)
-        self.bottomborder.draw(win)
+        Frame.draw(self, win)
+
+        top_border = Line(self.top_left(), self.top_right())
+        left_border = Line(self.top_left(), self.bottom_left())
+        right_border = Line(self.top_right(), self.bottom_right())
+        bottom_border = Line(self.bottom_left(), self.bottom_right())
+
+        top_border.draw(win)
+        left_border.draw(win)
+        right_border.draw(win)
+        bottom_border.draw(win)
+
+    def redraw(self, win):
+        Frame.redraw(self, win)
+
+        top_border = Line(self.top_left(), self.top_right())
+        left_border = Line(self.top_left(), self.bottom_left())
+        right_border = Line(self.top_right(), self.bottom_right())
+        bottom_border = Line(self.bottom_left(), self.bottom_right())
+
+        top_border.draw(win)
+        left_border.draw(win)
+        right_border.draw(win)
+        bottom_border.draw(win)

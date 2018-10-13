@@ -3,148 +3,131 @@
 # Matrix.py
 
 from Cell import Cell
-from graphics import *
 
-# Contains cells and statusList; can check life of neightbour cell given index
+
 class Matrix:
 
-    def __init__(self, bottomLeft, topRight, cellwidth, cellheight, numCols, numRows, win):
+    def __init__(self, numRows, numCols ):
 
-        # fields to init matrix
-        self.numcol = numCols
-        self.numrow = numRows
-        self.numcells = self.numrow * self.numcol
-        self.bottomLeft = bottomLeft
-        self.topRight = topRight
+        self.rows = numRows
+        self.columns = numCols
+        self.cells = Matrix.empty_cells(self.rows, self.columns)
 
-        # create list of cells
-        self.createCells(cellwidth, cellheight, win)
+    def print_cells(self):
+        for cell in self.cells:
+            print cell.get_alive(),
+        print
 
-        # list to hold life statuses of cells
-        self.statusList = self.buildStatusList()
+    @staticmethod
+    def empty_cells(rows, columns):
+        cells = []
+        for i in range(0, rows * columns):
+            cells.append(Cell(i))
+        return cells
 
-        # draw list of cells
-        for i in self.cells:
-            i.draw(win)
+    def length(self):
+        return len(self.cells)
 
-    def createCells(self, cellwidth, cellheight, win):
-        self.cells = []
-        for i in range(int(self.topRight.getY()), int(self.bottomLeft.getY()), cellheight):
-            for j in range(int(self.bottomLeft.getX()), self.numcol * cellwidth, cellwidth):
-                pt = Point(j, i)
-                self.cells.append(Cell(pt, Point(pt.x + cellwidth, pt.y + cellheight), win))
+    def cell_at(self, i):
+        cell = -1
 
-    # initializes the status list to match existing matrix
-    def updateStatusList(self):
-        for i in range(0, len(self.cells)):
-            self.statusList[i] = self.cells[i].status
+        if 0 <= i < len(self.cells):
+            cell = self.cells[i]
 
-    # build list of life statuses
-    def buildStatusList(self):
-        statusList = []
-        for i in range(0, len(self.cells)):
-            statusList.append(self.cells[i].status)
-        return statusList
+        return cell
 
-    # returns neighbour state if calling cell is not in left column or top row
-    def topleft(self, index):
-        try:
-            # if leftColumn or firstRow
-            if ((index % self.numcol == 0) or index < self.numcol):
-                return 0
-            else:
-                return self.statusList[index - self.numcol - 1]
-        except:
-            return 0
+    def neighbours(self, cell):
+        neighbours = []
+        if self.cell_tr(cell) != -1:      neighbours.append(self.cell_tr(cell))
+        if self.cell_tm(cell) != -1:      neighbours.append(self.cell_tm(cell))
+        if self.cell_tl(cell) != -1:      neighbours.append(self.cell_tl(cell))
+        if self.cell_right(cell) != -1:   neighbours.append(self.cell_right(cell))
+        if self.cell_left(cell) != -1:    neighbours.append(self.cell_left(cell))
+        if self.cell_br(cell) != -1:      neighbours.append(self.cell_br(cell))
+        if self.cell_bm(cell) != -1:      neighbours.append(self.cell_bm(cell))
+        if self.cell_bl(cell) != -1:      neighbours.append(self.cell_bl(cell))
+        return neighbours
 
-    # returns neighbour state if calling cell is not in first row
-    def topmid(self, index):
-        try:
-            # if in first row
-            if (index < self.numcol):
-                return 0
-            else:
-                return self.statusList[index - self.numcol]
-        except:
-            return 0
+    def last_column(self):
+        return self.columns - 1
 
-    # returns neighbour state if calling cell is not in last column or top row
-    def topright(self, index):
-        try:
-            if (index % self.numcol >= self.numcol - 1 or index < self.numcol):
-                return 0
-            else:
-                return self.statusList[index - self.numcol + 1]
-        except:
-            return 0
+    def first_column(self):
+        return 0
 
-    # returns neighbours state if calling cell is not in last row or last column
-    def bottomright(self, index):
-        try:
-            if (index % self.numcol >= self.numcol - 1 or index / self.numrow >= self.numrow - 1):
-                return 0
-            else:
-                return self.statusList[index + self.numcol + 1]
-        except:
-            return 0
+    def first_row(self):
+        return 0
 
-    # returns neighbours state if calling cell is not in last row
-    def bottommid(self, index):
-        try:
-            if (index / self.numrow >= self.numrow - 1):
-                return 0
-            else:
-                return self.statusList[index + self.numcol]
-        except:
-            return 0
+    def last_row(self):
+        return self.rows - 1
 
-    # returns neighbours state if calling cell is not in last row or first column
-    def bottomleft(self, index):
-        try:
-            if (index % self.numcol == 0 or index / self.numrow >= self.numrow - 1):
-                return 0
-            else:
-                return self.statusList[index + self.numcol - 1]
-        except:
-            return 0
+    def cell_tr(self, cell):
+        n_tr = -1
 
-    # returns neighbours state if calling cell is not in first column
-    def left(self, index):
-        try:
-            if (index % self.numcol == 0):
-                return 0
-            else:
-                return self.statusList[index - 1]
-        except:
-            return 0
+        if self.row(cell) != 0 and self.column(cell) != self.last_column():
+            n_tr = self.cells[cell.index - self.columns + 1]
 
-    # returns neighbours state if calling cell is not in last column
-    def right(self, index):
-        try:
-            if (index % self.numcol >= self.numcol - 1):
-                return 0
-            else:
-                return self.statusList[index + 1]
-        except:
-            return 0
+        return n_tr
 
-    # count number of alive neighbours
-    def countNeighbours(self, index):
-        count = 0
-        count += self.topleft(index)
-        count += self.topmid(index)
-        count += self.topright(index)
-        count += self.right(index)
-        count += self.left(index)
-        count += self.bottomleft(index)
-        count += self.bottommid(index)
-        count += self.bottomright(index)
-        return count
+    def cell_tm(self, cell):
+        neighbour = -1
 
-    # kill cell at index
-    def kill(self, index):
-        self.cells[index].turnOff()
+        if self.row(cell) != 0:
+            neighbour = self.cells[cell.index - self.columns]
 
-    # revive cell at index
-    def live(self, index):
-        self.cells[index].turnOn()
+        return neighbour
+
+    def cell_tl(self, cell):
+        neighbour = -1
+
+        if self.row(cell) != self.first_row() and self.column(cell) != self.first_column():
+            neighbour = self.cells[cell.index - self.columns - 1]
+
+        return neighbour
+
+    def cell_left(self, cell):
+        neighbour = -1
+
+        if self.column(cell) != self.first_column():
+            neighbour = self.cells[cell.index - 1]
+
+        return neighbour
+
+    def cell_right(self, cell):
+        neighbour = -1
+
+        if self.column(cell) != self.last_column():
+            neighbour = self.cells[cell.index + 1]
+
+        return neighbour
+
+    def cell_br(self, cell):
+        neighbour = -1
+
+        if self.row(cell) != self.last_row() and self.column(cell) != self.last_column():
+            neighbour = self.cells[cell.index + self.columns + 1]
+
+        return neighbour
+
+    def cell_bl(self, cell):
+        neighbour = -1
+
+        if self.row(cell) != self.last_row() and self.column(cell) != self.first_column():
+            neighbour = self.cells[cell.index + self.columns - 1]
+
+        return neighbour
+
+    def cell_bm(self, cell):
+        neighbour = -1
+
+        if self.row(cell) != self.last_row():
+            neighbour = self.cells[cell.index + self.columns]
+
+        return neighbour
+
+    def column(self, cell):
+        return cell.index % self.columns
+
+    def row(self, cell):
+        return cell.index / self.columns
+
+

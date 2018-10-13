@@ -34,12 +34,11 @@ UI improvements
 * screen dimensions
 * screen location
 * click+drag -> light up sets of cells
+* metrics for tracking long running non-repetetive patterns
 
 
 Architecture improvements
 
-* get rid of copyList/statusList -> maintain list of cells to change
 * Improve use of libraries
 * Move away from graphics.py
-* collapse frame classes into one
 
