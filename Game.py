@@ -43,9 +43,8 @@ class Game:
 		# update cells
 		while not self.quitting:
 
-			print "updating"
-
-			self.matrix.print_cells()
+			 # print "updating"
+			# self.matrix.print_cells()
 
 			matrix_cells_copy = copy.deepcopy(self.matrix.cells)
 
@@ -57,7 +56,7 @@ class Game:
 					if neighbour.get_alive():
 						active_neighbours += 1
 
-				print active_neighbours,
+				# print active_neighbours,
 
 				# update cell states
 				if cell.alive:
@@ -69,10 +68,10 @@ class Game:
 
 			self.matrix.cells = matrix_cells_copy
 
-			print
-			self.matrix.print_cells()
+			# print
+			# self.matrix.print_cells()
 
-			time.sleep(3)
+			time.sleep(1)
 
 		self.active = False
 		quit()

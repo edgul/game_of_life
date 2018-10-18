@@ -14,16 +14,15 @@ Known Issues:
 -------------
 
 * crashes on quit (before starting)
-* cannot stop once started
-* cannot quit once started
-
+* display sometimes draws a half-updated board
+* dead cells appear to flash
 
 Improvements:
 -------------
 
 UI improvements
 
-* speed options
+* speed adjustment options
 * restart (stop and clear)
 * pause/continue
 * place more pieces during pause
