@@ -2,25 +2,19 @@
 #
 # main.py
 
-from Game import Game
-from UserInput import *
+from Tkinter import Tk
+from MainWindow import MainWindow
 
+ROWS = 10
+COLUMNS = 10
 
 def main():
-
-    ROWS = 10
-    COLUMNS = 10
 
     WINDOW_WIDTH = 750
     WINDOW_HEIGHT = 750
 
-    user_input = UserInput(ROWS, COLUMNS, WINDOW_WIDTH, WINDOW_HEIGHT)
-
-    game = Game(ROWS, COLUMNS)
-
-    user_input.set_game(game)
-
-    user_input.input_loop()
-
+    root = Tk()
+    main_window = MainWindow(root, ROWS, COLUMNS)
+    root.mainloop()
 
 main()

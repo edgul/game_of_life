@@ -3,17 +3,12 @@
 # Game.py
 
 import threading
-from MainWindow import *
-from Matrix import Matrix
-
-import copy
+import time
 
 
 class Game:
 
 	def __init__(self, rows, columns):
-
-		self.matrix = Matrix(rows, columns)
 
 		self.quitting = False
 		self.active = False
@@ -22,12 +17,15 @@ class Game:
 		self.t = threading.Thread(target=self.init_loop)
 		self.t.start()
 
+	def set_matrix(self, matrix):
+		self.matrix = matrix
+
 	def get_matrix(self):
 		return self.matrix
 
 	def cell_clicked(self, cell):
 		if not self.active:
-			cell.set_alive(not cell.get_alive())
+			cell.set_alive(not cell.alive)
 
 	def start_clicked(self):
 		if not self.active:
@@ -43,10 +41,10 @@ class Game:
 		# update cells
 		while not self.quitting:
 
-			 # print "updating"
+			print "updating"
 			# self.matrix.print_cells()
 
-			matrix_cells_copy = copy.deepcopy(self.matrix.cells)
+			matrix_cells_copy = self.matrix.get_models()
 
 			for cell in self.matrix.cells:
 				neighbours = self.matrix.neighbours(cell)
@@ -61,12 +59,12 @@ class Game:
 				# update cell states
 				if cell.alive:
 					if active_neighbours < 2 or active_neighbours > 3:
-						matrix_cells_copy[cell.index].set_alive(False)
+						matrix_cells_copy[cell.index].alive = False
 				else:
 					if active_neighbours == 3:
-						matrix_cells_copy[cell.index].set_alive(True)
+						matrix_cells_copy[cell.index].alive = True
 
-			self.matrix.cells = matrix_cells_copy
+			self.matrix.set_models(matrix_cells_copy)
 
 			# print
 			# self.matrix.print_cells()
@@ -74,7 +72,6 @@ class Game:
 			time.sleep(1)
 
 		self.active = False
-		quit()
 
 	def init_loop(self):
 		print "init loop started"
@@ -85,12 +82,9 @@ class Game:
 
 			time.sleep(1)
 
-		if self.quitting:
-			self.quit()
-		elif self.start:
+		if self.start:
 			self.run()
 
-	def quit(self):
-		print "quitting"
+
 
 

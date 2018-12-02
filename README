@@ -6,16 +6,8 @@ Evolving cellular automation based on neighbour population.
 
 Dependencies:
 * python 2.7
-* Zelle's graphics.py
-* Tk
+* Tkinter
 
-
-Known Issues:
--------------
-
-* crashes on quit (before starting)
-* display sometimes draws a half-updated board
-* dead cells appear to flash
 
 Improvements:
 -------------
@@ -34,10 +26,4 @@ UI improvements
 * screen location
 * click+drag -> light up sets of cells
 * metrics for tracking long running non-repetetive patterns
-
-
-Architecture improvements
-
-* Improve use of libraries
-* Move away from graphics.py
 

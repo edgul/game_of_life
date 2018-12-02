@@ -3,27 +3,43 @@
 # Matrix.py
 
 from Cell import Cell
+from Tkinter import *
 
+class Matrix(Frame):
 
-class Matrix:
+    def __init__(self, master, numRows, numCols ):
+        Frame.__init__(self, master)
 
-    def __init__(self, numRows, numCols ):
+        self.master = master
+
+        self.cells = []
+        index = 0
+        for i in range(0, numCols):
+            for j in range(0, numRows):
+                button = Cell(self, index)
+                button.grid(row=j, column=i)
+                self.cells.append(button)
+                index += 1
 
         self.rows = numRows
         self.columns = numCols
-        self.cells = Matrix.empty_cells(self.rows, self.columns)
+
+    def set_models(self, new_models):
+        for cell_index in range(len(self.cells)):
+            self.cells[cell_index].set_model(new_models[cell_index])
+
+    def get_models(self):
+        models = []
+        for cell in self.cells:
+            models.append(cell.model())
+        return models
+
 
     def print_cells(self):
         for cell in self.cells:
-            print cell.get_alive(),
+            print cell.alive
         print
 
-    @staticmethod
-    def empty_cells(rows, columns):
-        cells = []
-        for i in range(0, rows * columns):
-            cells.append(Cell(i))
-        return cells
 
     def length(self):
         return len(self.cells)

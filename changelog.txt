@@ -1,0 +1,5 @@
+
+Removed dependency on graphics.py
+Fixed crashing on quit
+Fixed flashing dead cells
+Fixed refreshing half-way through a round change
